@@ -1,5 +1,6 @@
 import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useContext, useState, useEffect, useRef } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
 import { WizardProvider, WizardContext } from './context/WizardContext';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import CoverPDF from './CoverPDF';
@@ -202,15 +203,16 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (credentialResponse) => {
     setIsGoogleLoading(true);
     trackEvent('user_login', { method: 'google' });
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/cover-generator/dashboard' },
+        token: credentialResponse.credential,
       });
       if (error) throw error;
+      navigate('/cover-generator/dashboard');
     } catch (error) {
       alert('Google sign-in failed: ' + error.message);
       setIsGoogleLoading(false);
@@ -226,16 +228,18 @@ const Login = () => {
           <p className="mt-2 text-sm text-slate-500">Log in to access your saved semesters.</p>
 
           {/* Google OAuth */}
-          <div className="mt-6">
-            <button
-              id="google-login-btn"
-              onClick={handleGoogleLogin}
-              disabled={isGoogleLoading}
-              className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-300 disabled:opacity-60"
-            >
-              <GoogleIcon />
-              {isGoogleLoading ? 'Redirecting…' : 'Continue with Google'}
-            </button>
+          <div className="mt-6 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                alert('Google sign-in failed.');
+                setIsGoogleLoading(false);
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              text="continue_with"
+            />
           </div>
 
           {/* Divider */}
@@ -1324,7 +1328,7 @@ const SignUp = () => {
 
   // Persist any filled-in student details to localStorage before the OAuth
   // redirect so Dashboard can pick them up and upsert into the profiles table.
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignUp = async (credentialResponse) => {
     const hasDetails = studentProfile.fullName || studentProfile.studentId || studentProfile.batch;
     if (hasDetails) {
       localStorage.setItem('pending_student_profile', JSON.stringify({
@@ -1337,11 +1341,43 @@ const SignUp = () => {
     setIsGoogleLoading(true);
     trackEvent('user_signup', { method: 'google' });
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/cover-generator/dashboard' },
+        token: credentialResponse.credential,
       });
       if (error) throw error;
+
+      const userId = data.user.id;
+
+      if (hasDetails) {
+        const { error: profileError } = await supabase.from('profiles').upsert({
+          id: userId,
+          full_name: studentProfile.fullName,
+          student_id: studentProfile.studentId,
+          batch: studentProfile.batch,
+          section: studentProfile.section || ''
+        }, { onConflict: 'id' });
+        if (profileError) throw profileError;
+      }
+
+      if (selectedCourses.length > 0) {
+        const { data: semester, error: semesterError } = await supabase.from('semesters')
+          .insert({ student_id: userId, title: 'Current Semester' }).select().single();
+        if (semesterError) throw semesterError;
+
+        const coursesToSave = selectedCourses.map((selection) => ({
+          semester_id: semester.id,
+          course_id: selection.course?.isCustom ? null : (selection.course?.id || selection.course_id),
+          custom_course_code: selection.course?.isCustom ? selection.course?.course_code : null,
+          custom_course_name: selection.course?.isCustom ? selection.course?.course_name : null,
+          faculty_id: selection.faculty?.id || selection.faculty_id
+        }));
+
+        const { error: coursesError } = await supabase.from('semester_courses').insert(coursesToSave);
+        if (coursesError) throw coursesError;
+      }
+
+      navigate('/cover-generator/dashboard');
     } catch (error) {
       localStorage.removeItem('pending_student_profile');
       alert('Google sign-up failed: ' + error.message);
@@ -1358,15 +1394,19 @@ const SignUp = () => {
           <p className="text-sm text-slate-500 mb-6">Your cover details will be saved under "Current Semester."</p>
 
           {/* Google OAuth — fastest path */}
-          <button
-            id="google-signup-btn"
-            onClick={handleGoogleSignUp}
-            disabled={isGoogleLoading}
-            className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-300 disabled:opacity-60 mb-5"
-          >
-            <GoogleIcon />
-            {isGoogleLoading ? 'Redirecting…' : 'Continue with Google'}
-          </button>
+          <div className="mb-5 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSignUp}
+              onError={() => {
+                alert('Google sign-up failed.');
+                setIsGoogleLoading(false);
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              text="signup_with"
+            />
+          </div>
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-5">
