@@ -155,6 +155,23 @@ const GoogleIcon = () => (
   </svg>
 );
 
+// --- SHARED FOOTER ---
+const Footer = ({ isDark = false }) => (
+  <footer className={`mt-auto py-6 text-center ${isDark ? 'border-t border-slate-800/60' : 'border-t border-slate-200/60'}`}>
+    <p className={`text-sm font-medium ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
+      Created by{' '}
+      <a 
+        href="https://gaziseeyam.info" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className={`font-bold transition-colors hover:underline ${isDark ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+      >
+        Gazi Seeyam
+      </a>
+    </p>
+  </footer>
+);
+
 // --- STEP 1: LOGIN ---
 const Login = () => {
   const navigate = useNavigate();
@@ -779,7 +796,7 @@ const Generator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="flex flex-col min-h-screen bg-slate-100 text-slate-900">
       <AppHeader
         maxWidth="max-w-6xl"
         rightContent={
@@ -1147,11 +1164,12 @@ const Generator = () => {
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 };
@@ -1480,7 +1498,7 @@ const Dashboard = () => {
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm font-medium text-slate-500">Loading workspace…</div>;
 
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-900">
+    <div className="flex flex-col relative min-h-screen bg-slate-50 text-slate-900">
       <AppHeader
         maxWidth="max-w-6xl"
         rightContent={
@@ -1634,6 +1652,8 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 };
@@ -1791,6 +1811,8 @@ const LandingPage = () => {
 
         </div>
       </main>
+      
+      <Footer isDark />
     </div>
   );
 };
