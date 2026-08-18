@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/auth/v1/:path*",
+      "destination": "https://osvnoflmeestqwzqfuhq.supabase.co/auth/v1/:path*"
+    },
+    {
+      "source": "/rest/v1/:path*",
+      "destination": "https://osvnoflmeestqwzqfuhq.supabase.co/rest/v1/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
