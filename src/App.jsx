@@ -31,6 +31,13 @@ const formatSubmissionDate = (dateValue) => {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
 };
 
+// --- SAFE UMAMI EVENT TRACKING HELPER ---
+const trackEvent = (eventName, eventData = {}) => {
+  if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+    window.umami.track(eventName, eventData);
+  }
+};
+
 // --- REUSABLE SEARCHABLE SELECT COMPONENT ---
 const SearchableSelect = ({ value, onChange, options = [], placeholder, disabled = false, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -186,6 +193,7 @@ const Login = () => {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      trackEvent('user_login', { method: 'email' });
       navigate('/cover-generator/dashboard');
     } catch (error) {
       alert('Login failed: ' + error.message);
@@ -196,6 +204,7 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
+    trackEvent('user_login', { method: 'google' });
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -668,13 +677,78 @@ const Generator = () => {
 
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const [isSavingCourse, setIsSavingCourse] = useState(false);
+  // True while profile/semester is being fetched for an authenticated user
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
-  // Step 1: resolve auth state
+  // Step 1: resolve auth state and hydrate profile/courses if logged in
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsLoggedIn(Boolean(session));
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) {
+        setIsLoggedIn(false);
+        return;
+      }
+
+      setIsLoggedIn(true);
+      const userId = session.user.id;
+
+      // Only hydrate from DB if WizardContext is empty (e.g. hard refresh bypassing Dashboard)
+      const needsHydration = !studentProfile.fullName || !studentProfile.studentId;
+      const needsCourses = selectedCourses.length === 0;
+
+      if (!needsHydration && !needsCourses) return;
+
+      setIsLoadingProfile(true);
+      try {
+        // Fetch profile and latest semester in parallel
+        const [{ data: profile }, { data: semesters }] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('full_name, student_id, batch, section')
+            .eq('id', userId)
+            .single(),
+          needsCourses
+            ? supabase
+                .from('semesters')
+                .select('id')
+                .eq('student_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(1)
+            : Promise.resolve({ data: null }),
+        ]);
+
+        if (profile && needsHydration) {
+          setStudentProfile({
+            fullName: profile.full_name || '',
+            studentId: profile.student_id || '',
+            batch: profile.batch || '',
+            section: profile.section || '',
+          });
+        }
+
+        if (needsCourses && semesters && semesters.length > 0) {
+          const semesterId = semesters[0].id;
+          const { data: semCourses } = await supabase
+            .from('semester_courses')
+            .select(`
+              id,
+              course_id,
+              faculty_id,
+              custom_course_code,
+              custom_course_name,
+              course:courses(id, course_code, course_name),
+              faculty:faculty(id, name, designation)
+            `)
+            .eq('semester_id', semesterId);
+
+          if (semCourses && semCourses.length > 0) {
+            setSelectedCourses(mapSemesterCourseRows(semCourses));
+          }
+        }
+      } finally {
+        setIsLoadingProfile(false);
+      }
     });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Step 2: once we know the user is a guest, fetch global directories
   useEffect(() => {
@@ -786,6 +860,11 @@ const Generator = () => {
   };
 
   const handleDownload = async () => {
+    trackEvent('pdf_download', {
+      doc_type: formData.docType,
+      course_code: formData.courseCode,
+      is_logged_in: !!isLoggedIn,
+    });
     if (isLoggedIn) {
       // Fire-and-forget auto-save for authenticated users
       autoSaveCourseToSemester();
@@ -986,34 +1065,51 @@ const Generator = () => {
           <div className="mt-7 border-t border-slate-100 pt-5">
             <div className="mb-4 flex items-baseline justify-between">
               <label className="text-sm font-medium text-slate-700">Student details</label>
-              {isLoggedIn ? (
+              {isLoadingProfile ? (
+                <span className="text-xs font-medium text-slate-400 animate-pulse">Loading…</span>
+              ) : isLoggedIn ? (
                 <span className="text-xs font-medium text-slate-400">Read-only</span>
               ) : (
                 <span className="text-xs text-slate-500">Saved for your next cover</span>
               )}
             </div>
-            <InputField label="Full Name" name="fullName" value={studentProfile.fullName} onChange={handleProfileChange} placeholder="Enter your full name" readOnly={isLoggedIn} />
-            <div className="grid grid-cols-2 gap-4">
-              <InputField label="Student ID" name="studentId" value={studentProfile.studentId} onChange={handleProfileChange} placeholder="e.g. 2502010" readOnly={isLoggedIn} />
-              <InputField label="Batch" name="batch" value={studentProfile.batch} onChange={handleProfileChange} placeholder="e.g. BBA-15" readOnly={isLoggedIn} />
-            </div>
-            <InputField label="Section (optional)" name="section" value={studentProfile.section} onChange={handleProfileChange} placeholder="e.g. A" className={isLoggedIn ? 'mb-0' : 'mb-0'} readOnly={isLoggedIn} />
-            {isLoggedIn && (
-              <div className="mt-3 flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-                <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                </svg>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  To update your details,{' '}
-                  <button
-                    type="button"
-                    onClick={() => navigate('/cover-generator/dashboard')}
-                    className="font-semibold text-emerald-700 underline-offset-2 hover:underline hover:text-emerald-800 transition-colors"
-                  >
-                    edit your profile in the Dashboard
-                  </button>.
-                </p>
+
+            {isLoadingProfile ? (
+              /* Skeleton placeholders while profile fetches */
+              <div className="space-y-3">
+                <div className="h-[50px] w-full animate-pulse rounded-lg bg-slate-100" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-[50px] animate-pulse rounded-lg bg-slate-100" />
+                  <div className="h-[50px] animate-pulse rounded-lg bg-slate-100" />
+                </div>
+                <div className="h-[50px] w-full animate-pulse rounded-lg bg-slate-100" />
               </div>
+            ) : (
+              <>
+                <InputField label="Full Name" name="fullName" value={studentProfile.fullName} onChange={handleProfileChange} placeholder="Enter your full name" readOnly={isLoggedIn} />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField label="Student ID" name="studentId" value={studentProfile.studentId} onChange={handleProfileChange} placeholder="e.g. 2502010" readOnly={isLoggedIn} />
+                  <InputField label="Batch" name="batch" value={studentProfile.batch} onChange={handleProfileChange} placeholder="e.g. BBA-15" readOnly={isLoggedIn} />
+                </div>
+                <InputField label="Section (optional)" name="section" value={studentProfile.section} onChange={handleProfileChange} placeholder="e.g. A" className="mb-0" readOnly={isLoggedIn} />
+                {isLoggedIn && (
+                  <div className="mt-3 flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+                    <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                    </svg>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      To update your details,{' '}
+                      <button
+                        type="button"
+                        onClick={() => navigate('/cover-generator/dashboard')}
+                        className="font-semibold text-emerald-700 underline-offset-2 hover:underline hover:text-emerald-800 transition-colors"
+                      >
+                        edit your profile in the Dashboard
+                      </button>.
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -1217,6 +1313,7 @@ const SignUp = () => {
       const { error: coursesError } = await supabase.from('semester_courses').insert(coursesToSave);
       if (coursesError) throw coursesError;
 
+      trackEvent('user_signup', { method: 'email' });
       navigate('/cover-generator/dashboard');
     } catch (error) {
       alert('Unable to create and save your account: ' + error.message);
@@ -1238,6 +1335,7 @@ const SignUp = () => {
       }));
     }
     setIsGoogleLoading(true);
+    trackEvent('user_signup', { method: 'google' });
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -1746,7 +1844,10 @@ const LandingPage = () => {
 
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4">
                     <button
-                      onClick={() => navigate('/cover-generator')}
+                      onClick={() => {
+                        trackEvent('landing_cta_click');
+                        navigate('/cover-generator');
+                      }}
                       className="group inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500 hover:shadow-emerald-500/30 active:scale-[0.98]"
                     >
                       <span>Launch Cover Generator</span>
