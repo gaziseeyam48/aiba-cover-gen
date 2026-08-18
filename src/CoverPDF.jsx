@@ -49,36 +49,35 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     lineHeight: 1.3,
   },
-  // FIX: Course Info block is now a centered container with left-aligned rows
   courseInfoBlock: {
     alignSelf: 'center', 
     display: 'flex',
     flexDirection: 'column',
     marginTop: 20,
   },
- courseRow: {
+  courseRow: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center', /* THE FIX: Perfectly aligns the 10px text with the 13px text vertically */
+    alignItems: 'center',
     marginBottom: 12,
   },
   courseLabel: {
     fontFamily: 'Helvetica-Bold',
     fontSize: 10,
     textTransform: 'uppercase',
-    marginRight: 12, /* THE FIX: Replaced fixed width with a strict, consistent small gap */
+    marginRight: 12, 
   },
   courseValue: {
     fontSize: 13,
     textAlign: 'left',
   },
- bottomSection: {
+  bottomSection: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 70, /* THE FIX: Swapped 'auto' for a fixed 70pt gap to match the HTML preview */
+    marginTop: 70, 
     marginBottom: 30,
   },
   column: {
@@ -104,22 +103,22 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center', /* THE FIX: Aligns baselines vertically */
+    alignItems: 'center', 
     marginTop: 8,
   },
   idLabel: {
     fontFamily: 'Helvetica-Bold',
     fontSize: 10,
     textTransform: 'uppercase',
-    marginRight: 12, /* THE FIX: Replaced fixed width with a strict, consistent small gap */
+    marginRight: 12, 
   },
   idValue: {
     fontSize: 13,
     textAlign: 'left',
   },
-footer: {
+  footer: {
     textAlign: 'center',
-    marginTop: 'auto', /* THE FIX: Moved 'auto' here so ONLY the Date pushes to the bottom of the page */
+    marginTop: 'auto', 
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -142,13 +141,13 @@ const CoverPDF = ({ formData, formattedDate }) => (
     <Page size="A4" style={styles.page}>
       
       <View style={styles.headerContainer}>
-        <Image src="/header-logo.png" style={styles.logo} />
+        <Image src="/aibalogo.png" style={styles.logo} />
         <Text style={styles.uniName}>Army Institute of Business Administration, Savar</Text>
       </View>
 
       <View style={styles.middleSection}>
-        <Text style={styles.topicLabel}>Assignment On</Text>
-        <Text style={styles.topicTitle}>{formData.topic || 'Assignment Topic Goes Here'}</Text>
+        <Text style={styles.topicLabel}>{`${formData.docType || 'Assignment'} On`}</Text>
+        <Text style={styles.topicTitle}>{formData.assignmentTitle || `${formData.docType || 'Assignment'} Topic Goes Here`}</Text>
         
         <View style={styles.courseInfoBlock}>
           <View style={styles.courseRow}>
@@ -166,12 +165,12 @@ const CoverPDF = ({ formData, formattedDate }) => (
         <View style={styles.column}>
           <Text style={styles.colHeader}>Submitted To:</Text>
           <Text style={styles.boldText}>{formData.instructorName}</Text>
-          <Text style={styles.normalText}>{formData.instructorDesignation}</Text>
+          <Text style={styles.normalText}>{formData.designation}</Text>
         </View>
         
         <View style={styles.column}>
           <Text style={styles.colHeader}>Submitted By:</Text>
-          <Text style={styles.boldText}>{formData.studentName}</Text>
+          <Text style={styles.boldText}>{formData.fullName}</Text>
           <View style={styles.idRow}>
             <Text style={styles.idLabel}>ID:</Text>
             <Text style={styles.idValue}>{formData.studentId}</Text>
@@ -180,6 +179,12 @@ const CoverPDF = ({ formData, formattedDate }) => (
             <Text style={styles.idLabel}>BATCH:</Text>
             <Text style={styles.idValue}>{formData.batch}</Text>
           </View>
+          {formData.section && (
+            <View style={styles.idRow}>
+              <Text style={styles.idLabel}>SECTION:</Text>
+              <Text style={styles.idValue}>{formData.section}</Text>
+            </View>
+          )}
         </View>
       </View>
 
