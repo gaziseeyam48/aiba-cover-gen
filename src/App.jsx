@@ -29,12 +29,13 @@ const formatSubmissionDate = (dateValue) => {
 };
 
 // --- REUSABLE SEARCHABLE SELECT COMPONENT ---
-const SearchableSelect = ({ value, onChange, options, placeholder, disabled = false, className = '' }) => {
+const SearchableSelect = ({ value, onChange, options = [], placeholder, disabled = false, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const wrapperRef = useRef(null);
 
-  const selectedOption = options.find(opt => String(opt.value) === String(value));
+  const safeOptions = Array.isArray(options) ? options : [];
+  const selectedOption = safeOptions.find(opt => String(opt.value) === String(value));
   const displayLabel = selectedOption ? selectedOption.label : placeholder;
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const SearchableSelect = ({ value, onChange, options, placeholder, disabled = fa
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredOptions = options.filter(opt =>
+  const filteredOptions = safeOptions.filter(opt =>
     opt.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -64,8 +65,12 @@ const SearchableSelect = ({ value, onChange, options, placeholder, disabled = fa
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl">
-          <div className="p-2 border-b border-slate-100 bg-slate-50">
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-xl">
+          <div
+            className="p-2 border-b border-slate-100 bg-slate-50"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+          >
             <input
               type="text"
               autoFocus
@@ -75,7 +80,7 @@ const SearchableSelect = ({ value, onChange, options, placeholder, disabled = fa
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <ul className="max-h-60 overflow-y-auto py-1">
+          <ul className="min-h-0 max-h-52 overflow-y-auto py-1 border-t border-slate-100">
             {filteredOptions.length === 0 ? (
               <li className="px-3 py-2 text-sm text-slate-500 text-center">No results found</li>
             ) : (
@@ -405,7 +410,7 @@ const SemesterSetup = () => {
           <p className="mt-2 text-slate-600">Add the courses and faculty members you want available in the generator.</p>
         </div>
         
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="px-4 py-5 sm:px-6 sm:py-6">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
