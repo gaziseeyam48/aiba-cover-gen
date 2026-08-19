@@ -180,6 +180,68 @@ const Footer = ({ isDark = false }) => (
   </footer>
 );
 
+// --- LANDING PAGE SPECIFIC FOOTER ---
+const LandingFooter = () => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('hellogaziseeyam@gmail.com');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <footer className="mt-auto border-t border-slate-800/80 bg-slate-950/80 py-8 px-4 sm:px-6">
+      <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+          <p className="text-sm text-slate-400">
+            Created by{' '}
+            <a
+              href="https://gaziseeyam.info"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors hover:underline"
+            >
+              Gazi Seeyam
+            </a>
+          </p>
+          <span className="hidden sm:inline text-slate-700">&bull;</span>
+          <span className="text-xs text-slate-500">Get in touch for collabs &amp; feedback</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <a
+            href="mailto:hellogaziseeyam@gmail.com"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/90 px-3.5 py-1.5 text-xs font-medium text-slate-300 transition-all hover:border-emerald-500/50 hover:bg-slate-800 hover:text-emerald-300"
+          >
+            <svg className="h-3.5 w-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>hellogaziseeyam@gmail.com</span>
+          </a>
+          <button
+            type="button"
+            onClick={handleCopyEmail}
+            title={copied ? "Copied to clipboard" : "Copy email address"}
+            className="inline-flex items-center justify-center h-8 px-2.5 rounded-full border border-slate-800 bg-slate-900/90 text-xs font-medium text-slate-400 transition-all hover:border-emerald-500/50 hover:bg-slate-800 hover:text-emerald-300 active:scale-95"
+          >
+            {copied ? (
+              <span className="text-emerald-400 font-semibold">Copied!</span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span>Copy</span>
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
 // --- STEP 1: LOGIN ---
 const Login = () => {
   const navigate = useNavigate();
@@ -2032,7 +2094,7 @@ const LandingPage = () => {
         </div>
       </main>
 
-      <Footer isDark />
+      <LandingFooter />
     </div>
   );
 };
