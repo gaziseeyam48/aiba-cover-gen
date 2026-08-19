@@ -180,67 +180,7 @@ const Footer = ({ isDark = false }) => (
   </footer>
 );
 
-// --- LANDING PAGE SPECIFIC FOOTER ---
-const LandingFooter = () => {
-  const [copied, setCopied] = useState(false);
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText('hellogaziseeyam@gmail.com');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <footer className="mt-auto border-t border-slate-800/80 bg-slate-950/80 py-8 px-4 sm:px-6">
-      <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
-          <p className="text-sm text-slate-400">
-            Created by{' '}
-            <a
-              href="https://gaziseeyam.info"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors hover:underline"
-            >
-              Gazi Seeyam
-            </a>
-          </p>
-          <span className="hidden sm:inline text-slate-700">&bull;</span>
-          <span className="text-xs text-slate-500">Get in touch for collabs &amp; feedback</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <a
-            href="mailto:hellogaziseeyam@gmail.com"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/90 px-3.5 py-1.5 text-xs font-medium text-slate-300 transition-all hover:border-emerald-500/50 hover:bg-slate-800 hover:text-emerald-300"
-          >
-            <svg className="h-3.5 w-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <span>hellogaziseeyam@gmail.com</span>
-          </a>
-          <button
-            type="button"
-            onClick={handleCopyEmail}
-            title={copied ? "Copied to clipboard" : "Copy email address"}
-            className="inline-flex items-center justify-center h-8 px-2.5 rounded-full border border-slate-800 bg-slate-900/90 text-xs font-medium text-slate-400 transition-all hover:border-emerald-500/50 hover:bg-slate-800 hover:text-emerald-300 active:scale-95"
-          >
-            {copied ? (
-              <span className="text-emerald-400 font-semibold">Copied!</span>
-            ) : (
-              <span className="flex items-center gap-1">
-                <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span>Copy</span>
-              </span>
-            )}
-          </button>
-        </div>
-      </div>
-    </footer>
-  );
-};
 
 // --- STEP 1: LOGIN ---
 const Login = () => {
@@ -1953,148 +1893,131 @@ const Dashboard = () => {
 const LandingPage = () => {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden">
-      {/* Top Under Construction Notice Bar */}
-      <div className="border-b border-amber-500/20 bg-amber-500/10 px-4 py-3 text-center text-sm font-medium text-amber-300 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-center gap-2">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
-          <span className="font-bold uppercase tracking-wider text-xs bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30 text-amber-200 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
-            Under Construction
-          </span>
-          <span className="text-slate-300">
-            This website is currently being built. Check out my featured side project below!
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 font-sans selection:bg-zinc-950 selection:text-zinc-50 flex flex-col">
+      {/* Header */}
+      <header className="w-full px-6 py-6 md:px-12 md:py-8 flex items-center justify-between border-b border-zinc-200/50">
+        <div className="text-xl font-bold tracking-tighter">gaziseeyam.</div>
+        <div className="flex items-center gap-3 text-sm font-medium text-zinc-500">
+          <span className="hidden sm:inline">Live in Dhaka (GMT+6)</span>
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
         </div>
-      </div>
+      </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8 w-full">
-        {/* Main Hero Header */}
-        <div className="w-full max-w-4xl text-center space-y-6 mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-5 py-2 text-sm font-semibold text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
-            <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-            🚧 Portfolio Under Construction
-          </div>
-
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white leading-tight drop-shadow-xl">
-            Building things for <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-              university & beyond
-            </span>.
-          </h1>
-
-          <p className="mx-auto max-w-2xl text-lg sm:text-xl text-slate-400 leading-relaxed">
-            Welcome to my digital corner. The main website is under active construction, but you can try my live side project below.
-          </p>
-        </div>
-
-        {/* Featured Side Project Showcase Card */}
-        <div className="w-full max-w-3xl mx-auto relative rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-8 shadow-2xl backdrop-blur-xl ring-1 ring-white/5 overflow-hidden group">
-          {/* Ambient background glow */}
-          <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-700" />
-          <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl pointer-events-none" />
-
-          <div className="relative z-10">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-              <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">My Side Project</span>
-              </div>
-              <span className="inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
-                Live &bull; Production
+      {/* Main Content Area - Asymmetric 2-Column Desktop Grid */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 md:px-12 md:py-20 lg:py-24">
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+          
+          {/* Left Column (60%) */}
+          <div className="w-full lg:w-[60%] flex flex-col justify-center">
+            <h1 className="text-6xl sm:text-7xl lg:text-[7rem] font-bold tracking-tighter leading-[0.95] text-zinc-950 mb-8 lg:mb-10">
+              Gazi Seeyam.<br />
+              <span className="font-medium text-zinc-500 text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight block mt-4 lg:mt-6">
+                Product Designer &amp; Builder based in Dhaka.
               </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <div className="space-y-3 text-left">
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  Cover Page Generator for my University
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  A purpose-built web tool created for <strong className="text-emerald-400 font-semibold">AIBA Savar</strong> students to eliminate manual cover formatting. Generate 100% compliant, print-ready PDF cover pages in seconds.
-                </p>
-
-                {/* Feature Highlights */}
-                <div className="grid grid-cols-1 gap-2 pt-1">
-                  <div className="flex items-center gap-2 text-[11px] text-slate-300 bg-slate-800/60 border border-slate-700/50 rounded-lg p-2">
-                    <svg className="h-3.5 w-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    <span>Official AIBA layout format</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-300 bg-slate-800/60 border border-slate-700/50 rounded-lg p-2">
-                    <svg className="h-3.5 w-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    <span>Instant print-ready PDF export</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-3">
-                  <button
-                    onClick={() => {
-                      trackEvent('landing_cta_click');
-                      navigate('/cover-generator');
-                    }}
-                    className="group inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500 hover:shadow-emerald-500/30 active:scale-[0.98] w-full sm:w-auto"
-                  >
-                    <span>Launch Tool</span>
-                    <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => navigate('/cover-generator/login')}
-                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-300 transition-all hover:border-slate-600 hover:bg-slate-800 hover:text-white w-full sm:w-auto"
-                  >
-                    Student Login
-                  </button>
-                </div>
-              </div>
-
-              {/* Visual Mini Preview Graphic */}
-              <div className="flex flex-col items-center justify-center">
-                <div
-                  onClick={() => navigate('/cover-generator')}
-                  className="cursor-pointer w-full rounded-xl border border-slate-700/60 bg-slate-950/80 p-4 shadow-inner transition-transform hover:scale-[1.02] group-hover:border-emerald-500/40"
-                >
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
-                    </div>
-                    <span className="text-[10px] font-mono text-slate-500">cover-generator.aiba</span>
-                  </div>
-
-                  <div className="space-y-2.5 text-left">
-                    <div className="flex items-center gap-2.5">
-                      <img src="/aibalogo.png" alt="AIBA Logo" className="h-6 w-6 object-contain" />
-                      <div>
-                        <div className="h-1.5 w-20 bg-slate-700 rounded" />
-                        <div className="h-1 w-28 bg-slate-800 rounded mt-1" />
-                      </div>
-                    </div>
-                    <div className="rounded-lg bg-slate-900 p-2.5 border border-slate-800/80 space-y-1.5">
-                      <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide">Assignment Cover Preview</div>
-                      <div className="h-1.5 w-full bg-slate-700 rounded" />
-                      <div className="h-1.5 w-3/4 bg-slate-800 rounded" />
-                    </div>
-                    <div className="flex items-center justify-between pt-1 text-[10px] text-slate-400">
-                      <span>Format: A4 Official</span>
-                      <span className="font-semibold text-emerald-400 group-hover:underline">Open &rarr;</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-zinc-800 leading-snug font-light max-w-xl mb-12">
+              <strong className="font-medium">Specializing in UI/UX architecture, design systems, and frontend execution.</strong>
+            </p>
+            
+            {/* Quick Action Bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-10">
+              <a
+                href="mailto:hellogaziseeyam@gmail.com"
+                className="rounded-full border border-zinc-950 bg-zinc-950 px-7 py-3.5 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:scale-[1.02] shadow-sm"
+              >
+                Let's Talk &rarr;
+              </a>
+              
+              <ul className="flex flex-wrap items-center gap-6 text-sm font-semibold text-zinc-500">
+                <li>
+                  <a href="https://www.linkedin.com/in/gaziseeyam/" target="_blank" rel="noreferrer" className="hover:text-zinc-950 hover:underline underline-offset-4 decoration-zinc-300 transition-all">LinkedIn</a>
+                </li>
+                <li>
+                  <a href="https://www.behance.net/hellogaziseeyam" target="_blank" rel="noreferrer" className="hover:text-zinc-950 hover:underline underline-offset-4 decoration-zinc-300 transition-all">Behance</a>
+                </li>
+                <li>
+                  <a href="https://dribbble.com/gaziseeyam" target="_blank" rel="noreferrer" className="hover:text-zinc-950 hover:underline underline-offset-4 decoration-zinc-300 transition-all">Dribbble</a>
+                </li>
+              </ul>
             </div>
           </div>
-        </div>
-
-        {/* Under Construction Footer Note */}
-        <div className="mt-8 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-amber-400/80" />
-          <span>More projects & portfolio sections coming soon</span>
+          
+          {/* Right Column (40%) */}
+          <div className="w-full lg:w-[40%] flex flex-col pt-4 lg:pt-8">
+            <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-[0.15em] mb-6">
+              Featured Work &amp; Tools
+            </h3>
+            
+            {/* Beautiful Project Card */}
+            <div 
+              onClick={() => navigate('/cover-generator')}
+              className="group cursor-pointer rounded-2xl border border-zinc-200 bg-white p-6 md:p-8 transition-all duration-300 hover:border-zinc-900 shadow-sm hover:shadow-md hover:-translate-y-1 flex flex-col gap-6"
+            >
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-600">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  Web Tool &middot; Live
+                </span>
+                <span className="text-zinc-400 group-hover:text-zinc-900 transition-colors">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg>
+                </span>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="text-2xl font-semibold text-zinc-900 tracking-tight">CoverGen for AIBA Savar</h4>
+                <p className="text-zinc-500 text-sm leading-relaxed">
+                  Automated standard cover page generator for university assignments and reports.
+                </p>
+              </div>
+              
+              {/* Visual Mock Element (Miniature Document) */}
+              <div className="mt-4 w-full aspect-[4/3] rounded-xl border border-zinc-100 bg-zinc-50/50 flex items-center justify-center p-6 relative overflow-hidden group-hover:bg-zinc-50 transition-colors">
+                <div className="w-full max-w-[180px] aspect-[1/1.4] bg-white border border-zinc-200 shadow-sm rounded flex flex-col relative group-hover:shadow-md group-hover:-translate-y-2 transition-all duration-500 ease-out">
+                  {/* Mock Doc Header */}
+                  <div className="w-full h-1/4 bg-zinc-100/50 border-b border-zinc-100 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-zinc-200"></div>
+                  </div>
+                  {/* Mock Doc Lines */}
+                  <div className="flex-1 p-4 space-y-3">
+                    <div className="w-3/4 h-2 rounded bg-zinc-200"></div>
+                    <div className="w-1/2 h-2 rounded bg-zinc-200"></div>
+                    <div className="w-full h-2 rounded bg-zinc-100 mt-4"></div>
+                    <div className="w-5/6 h-2 rounded bg-zinc-100"></div>
+                  </div>
+                  {/* Floating badges on mock */}
+                  <div className="absolute -bottom-3 -right-3 flex flex-col gap-2 scale-90 sm:scale-100">
+                    <span className="shadow-sm rounded bg-emerald-100 border border-emerald-200 text-emerald-800 text-[9px] font-bold px-2 py-1 uppercase tracking-wider">A4 Standard</span>
+                    <span className="shadow-sm rounded bg-amber-100 border border-amber-200 text-amber-800 text-[9px] font-bold px-2 py-1 uppercase tracking-wider text-right">Instant PDF</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </main>
 
-      <LandingFooter />
+      {/* Bottom Accent Strip (Editorial Marquee) */}
+      <footer className="w-full mt-auto bg-zinc-950 text-zinc-400 py-4 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs sm:text-sm font-medium tracking-wide uppercase">
+          <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-8 gap-y-2">
+            <span>&bull; Product Design (UI/UX)</span>
+            <span className="hidden sm:inline">&bull; Frontend Development</span>
+            <span className="hidden md:inline">&bull; Design Systems</span>
+            <span className="text-zinc-100">&bull; Available for Select Projects</span>
+          </div>
+          <div className="shrink-0 text-zinc-600">
+            &copy; {new Date().getFullYear()}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
