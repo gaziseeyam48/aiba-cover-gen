@@ -1906,8 +1906,9 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Main Content Area - Asymmetric 2-Column Desktop Grid */}
+      {/* Main Content Area */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 md:px-12 md:py-20 lg:py-24">
+        {/* Asymmetric 2-Column Hero & Featured Grid */}
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
           
           {/* Left Column (60%) */}
@@ -2002,6 +2003,59 @@ const LandingPage = () => {
           </div>
           
         </div>
+
+        {/* Work Experience & Consulting Section (Editorial Ledger) */}
+        <section className="mt-20 lg:mt-28 border-t border-zinc-200 pt-12 md:pt-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+            
+            {/* Left Header */}
+            <div className="lg:col-span-3">
+              <h2 className="text-sm font-semibold tracking-widest text-zinc-950 uppercase mb-2">
+                Industry Roles &amp; Engagements
+              </h2>
+            </div>
+
+            {/* Right List (The Ledger) */}
+            <div className="lg:col-span-9 flex flex-col">
+              
+              {/* Sysonex Row */}
+              <div className="group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center py-6 border-b border-zinc-200 hover:bg-zinc-50/80 transition-colors px-3 -mx-3 cursor-default">
+                <div className="md:col-span-3 font-semibold text-zinc-950">
+                  Sysonex
+                </div>
+                <div className="md:col-span-6 text-zinc-700">
+                  <span className="font-medium">UI Designer &amp; Analyst</span>
+                  <span className="text-zinc-500 ml-2 hidden lg:inline-block">&mdash; Interface design &amp; system analysis</span>
+                </div>
+                <div className="md:col-span-3 md:text-right text-xs text-zinc-400 uppercase tracking-widest font-mono flex justify-between md:justify-end items-center gap-4">
+                  <span>Jan 2024 &mdash; Present</span>
+                  <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-zinc-950">&rarr;</span>
+                </div>
+              </div>
+
+              {/* Freelance & Client Work Row */}
+              <div className="group grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-6 border-b border-zinc-200 transition-colors px-3 -mx-3">
+                <div className="md:col-span-3 font-semibold text-zinc-950">
+                  Independent
+                </div>
+                <div className="md:col-span-6 text-zinc-700">
+                  <span className="font-medium">Selected Works &amp; Client Case Studies</span>
+                </div>
+                <div className="md:col-span-3 md:text-right flex items-center md:justify-end">
+                  <a
+                    href="https://calendly.com/gaziseeyam/30min"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 bg-zinc-950 px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-zinc-800 transition-all rounded-sm"
+                  >
+                    Schedule Meeting <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Bottom Accent Strip (Editorial Marquee) */}
