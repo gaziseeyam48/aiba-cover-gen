@@ -12,6 +12,7 @@ const SignUp = lazy(() => import('./pages/SignUp'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const GuestCourseSetup = lazy(() => import('./pages/GuestCourseSetup'));
 const SelectionHub = lazy(() => import('./pages/SelectionHub'));
+const MktMgtMid = lazy(() => import('./pages/MktMgtMid'));
 
 // --- COVER-GENERATOR AUTH GUARD ---
 const CoverGeneratorGuard = () => {
@@ -38,6 +39,7 @@ function App() {
       <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-emerald-700 font-medium">Loading...</div>}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/mkt-mgt-mid" element={<MktMgtMid />} />
           <Route path="/cover-generator" element={<CoverGeneratorGuard />} />
           <Route path="/cover-generator/instant" element={<Generator />} />
           <Route path="/cover-generator/setup-courses" element={<GuestCourseSetup />} />
